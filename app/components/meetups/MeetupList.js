@@ -1,3 +1,5 @@
+'use client'
+
 import MeetupItem from './MeetupItem';
 import classes from './MeetupList.module.css';
 
