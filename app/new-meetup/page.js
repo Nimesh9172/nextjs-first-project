@@ -1,22 +1,30 @@
-'use client'
+"use client";
 
-import NewMeetupForm from "../components/meetups/NewMeetupForm"
+import NewMeetupForm from "../components/meetups/NewMeetupForm";
 
 const NewMeetupPage = () => {
+  const addMeetupHandler = async (meetupData) => {
+    try {
+      const response = await fetch("/api/new-meetup",{
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+        },
+        body:JSON.stringify(meetupData)
+      });
 
-    const addMeetupHandler = async (meetupData) => {
-        console.log(meetupData)
-        const response =  await fetch('/api/new-meetup')
+      if (!response.ok) {
+        throw new Error("Request failed");
+      }
 
-        const data = await response.json()
-
-        console.log(data)
-
+      const data =  response;
+      console.log(data);
+    } catch (error) {
+      console.error("Error:", error);
     }
+  };
 
-    return <NewMeetupForm onAddMeetup={addMeetupHandler}/> 
-}
+  return <NewMeetupForm onAddMeetup={addMeetupHandler} />;
+};
 
-export default NewMeetupPage
-
-
+export default NewMeetupPage;
