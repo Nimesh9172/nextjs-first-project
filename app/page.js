@@ -1,40 +1,36 @@
-
 // 'use client'
+import { Fragment } from "react";
 import MeetupList from "./components/meetups/MeetupList";
-
-const DUMMY_MEETUPS = [
-  {
-    id: "m1",
-    title: "A First meetup",
-    image:
-      "https://www.hillel.org/wp-content/uploads/college-images/University_of_Toronto_St_George.png",
-    address: "first address 9172232",
-    description: "This is a second meetup",
-  },
-  {
-    id: "m2",
-    title: "A Second meetup",
-    image:
-    "https://www.hillel.org/wp-content/uploads/college-images/University_of_Toronto_St_George.png",
-    address: "Some address 12345",
-    description: "This is a second meetup",
-  },
-];
-
-
-async function getData(){
-
-  const data = DUMMY_MEETUPS
-  return data
-
-}
-
-export default async function Home(props) {
-
-  const data = await getData()
-  console.log(data)
-  return <MeetupList meetups={data} />;
-}
-
+import createMongoClient from "./db/db";
 
 export const revalidate = 10
+
+async function getData() {
+
+  const client = await createMongoClient();
+
+  try {
+    const database = client.db("first_db");
+    const myColl = database.collection("meetup");
+    const query = {};
+    const result = await myColl.find(query).toArray();
+    const data =  result.map(item => ({id:item._id.toString(),title:item.title,address:item.address,description:item.description,image:item.image}))
+    return data
+  } catch (err) {
+    console.log(err);
+    return []
+  }
+}
+
+export default async function Home() {
+  const data = await getData();
+  return (
+    <Fragment>
+      <Head>
+        <title></title>
+      </Head>
+      <MeetupList meetups={data} />
+    </Fragment>
+  );
+}
+
